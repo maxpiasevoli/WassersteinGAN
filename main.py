@@ -16,6 +16,7 @@ import json
 
 import models.dcgan as dcgan
 import models.mlp as mlp
+import data.BehavioralDataset as BehavioralDataset
 
 if __name__=="__main__":
 
@@ -88,6 +89,10 @@ if __name__=="__main__":
                                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
                             ])
         )
+    elif opt.dataset == 'behavioral':
+        dataset = BehavioralDataset(transform=transforms.Compose([
+                                                transforms.ToTensor()
+                                              ]))
     assert dataset
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
                                             shuffle=True, num_workers=int(opt.workers))
