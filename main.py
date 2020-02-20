@@ -30,6 +30,7 @@ if __name__=="__main__":
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 512 --ndf 512
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100 --lrD 0.000005 --niter 50
 
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
