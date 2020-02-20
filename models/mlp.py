@@ -31,6 +31,7 @@ class MLP_G(nn.Module):
             output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
         else:
             output = self.main(input)
+        #print(output)
         return output.view(output.size(0), self.nc, self.isize, self.isize)
 
 
@@ -53,6 +54,16 @@ class MLP_D(nn.Module):
         self.nc = nc
         self.isize = isize
         self.nz = nz
+
+    def pred(self, input):
+        input = input.view(input.size(0),
+                           input.size(1) * input.size(2) * input.size(3))
+        if isinstance(input.data, torch.cuda.FloatTensor) and self.ngpu > 1:
+            output = nn.parallel.data_parallel(self.main, input, range(self.ngpu))
+            return output.data.cpu().numpy()
+        else:
+            output = self.main(input)
+            return output.data.numpy()
 
     def forward(self, input):
         input = input.view(input.size(0),

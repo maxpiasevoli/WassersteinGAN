@@ -16,10 +16,23 @@ import json
 
 import models.dcgan as dcgan
 import models.mlp as mlp
-import data.BehavioralDataset as BehavioralDataset
+import data.BehavioralDataset as local_dsets
+
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+import warnings
 
 if __name__=="__main__":
 
+    warnings.filterwarnings("ignore")
+
+    # working
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 512 --ndf 512
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100
+
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
     parser.add_argument('--dataroot', required=True, help='path to dataset')
@@ -90,9 +103,8 @@ if __name__=="__main__":
                             ])
         )
     elif opt.dataset == 'behavioral':
-        dataset = BehavioralDataset(transform=transforms.Compose([
-                                                transforms.ToTensor()
-                                              ]))
+        tfm = transforms.Compose([transforms.ToTensor()])
+        dataset = local_dsets.BehavioralDataset()
     assert dataset
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
                                             shuffle=True, num_workers=int(opt.workers))
@@ -106,7 +118,7 @@ if __name__=="__main__":
 
     # write out generator config to generate images together wth training checkpoints (.pth)
     generator_config = {"imageSize": opt.imageSize, "nz": nz, "nc": nc, "ngf": ngf, "ngpu": ngpu, "n_extra_layers": n_extra_layers, "noBN": opt.noBN, "mlp_G": opt.mlp_G}
-    with open(os.path.join(opt.experiment, "generator_config.json"), 'w') as gcfg:
+    with open(os.path.join(opt.experiment, "generator_config.json"), 'w+') as gcfg:
         gcfg.write(json.dumps(generator_config)+"\n")
 
     # custom weights initialization called on netG and netD
@@ -200,7 +212,7 @@ if __name__=="__main__":
 
                 if opt.cuda:
                     real_cpu = real_cpu.cuda()
-                input.resize_as_(real_cpu).copy_(real_cpu)
+                #input.resize_as_(real_cpu).copy_(real_cpu)
                 inputv = Variable(input)
 
                 errD_real = netD(inputv)
@@ -216,6 +228,26 @@ if __name__=="__main__":
                 errD = errD_real - errD_fake
                 optimizerD.step()
 
+            # determine critic's ability to differentiate
+            real_crit_scores = netD.pred(inputv)
+            fake_crit_scores = netD.pred(inputv)
+
+            x_dat = np.vstack((real_crit_scores, fake_crit_scores))
+            x_dat = x_dat.astype('float64')
+            y_dat = np.vstack((np.ones((real_crit_scores.shape[0],1)), -1*(np.ones((fake_crit_scores.shape[0],1)))))
+
+            clf = LogisticRegression(solver='lbfgs')
+            clf.fit(x_dat, y_dat)
+            pred_labels = clf.predict(x_dat)
+            batch_size = y_dat.shape[0]
+            half_batch_size = batch_size // 2
+            pred_labels = pred_labels.reshape(batch_size,1)
+            num_correct_total = np.sum(pred_labels == y_dat)
+            num_correct_real = np.sum(pred_labels[:half_batch_size, :] == y_dat[:half_batch_size, :])
+            num_correct_fake = np.sum(pred_labels[half_batch_size:,:] == y_dat[half_batch_size:,:])
+            print('Critic correctly identified {0} out of {1}'.format(num_correct_total, x_dat.shape[0]))
+            print('Number real samples correctly identified: {0}'.format(num_correct_real))
+            print('Number fake samples correctly identified: {0}'.format(num_correct_fake))
             ############################
             # (2) Update G network
             ###########################
@@ -241,6 +273,8 @@ if __name__=="__main__":
             #     fake = netG(Variable(fixed_noise, volatile=True))
             #     fake.data = fake.data.mul(0.5).add(0.5)
             #     vutils.save_image(fake.data, '{0}/fake_samples_{1}.png'.format(opt.experiment, gen_iterations))
+
+
 
         # do checkpointing
         torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
