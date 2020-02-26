@@ -31,6 +31,9 @@ if __name__=="__main__":
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 512 --ndf 512
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100 --lrD 0.000005 --niter 50
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 25 --ndf 25 --lrD 0.00003 --niter 10000
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 25 --ndf 25 --lrD 0.0001 --niter 3000
+
 
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
@@ -68,7 +71,7 @@ if __name__=="__main__":
         opt.experiment = 'samples'
     os.system('mkdir {0}'.format(opt.experiment))
 
-    opt.manualSeed = random.randint(1, 10000) # fix seed
+    opt.manualSeed = 0 #random.randint(1, 10000) # fix seed
     print("Random Seed: ", opt.manualSeed)
     random.seed(opt.manualSeed)
     torch.manual_seed(opt.manualSeed)
@@ -280,3 +283,6 @@ if __name__=="__main__":
         # do checkpointing
         torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
         torch.save(netD.state_dict(), '{0}/netD_epoch_{1}.pth'.format(opt.experiment, epoch))
+
+    print(fake.data.numpy().reshape((64,25)))
+    np.savetxt(opt.experiment + '/fake_samples.csv', fake.data.numpy().reshape((64,25)))
