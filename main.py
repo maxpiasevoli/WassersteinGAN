@@ -37,6 +37,8 @@ if __name__=="__main__":
 
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
+
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --ngf 64 --ndf 64
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
     parser.add_argument('--dataroot', required=True, help='path to dataset')
@@ -81,6 +83,8 @@ if __name__=="__main__":
     if torch.cuda.is_available() and not opt.cuda:
         print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
+    isCnnData = not opt.mlp_G and not opt.mlp_D
+
     if opt.dataset in ['imagenet', 'folder', 'lfw']:
         # folder dataset
         dataset = dset.ImageFolder(root=opt.dataroot,
@@ -108,7 +112,7 @@ if __name__=="__main__":
         )
     elif opt.dataset == 'behavioral':
         tfm = transforms.Compose([transforms.ToTensor()])
-        dataset = local_dsets.BehavioralDataset()
+        dataset = local_dsets.BehavioralDataset(isCnnData=isCnnData)
     assert dataset
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
                                             shuffle=True, num_workers=int(opt.workers))
@@ -233,8 +237,10 @@ if __name__=="__main__":
                 optimizerD.step()
 
             # determine critic's ability to differentiate
-            real_crit_scores = netD.pred(inputv)
-            fake_crit_scores = netD.pred(inputv)
+            real_crit_scores = netD.pred(inputv)[:,0,0,0]
+            fake_crit_scores = netD.pred(inputv)[:,0,0,0]
+            real_crit_scores = real_crit_scores.reshape(real_crit_scores.shape[0],1)
+            fake_crit_scores = fake_crit_scores.reshape(fake_crit_scores.shape[0],1)
 
             x_dat = np.vstack((real_crit_scores, fake_crit_scores))
             x_dat = x_dat.astype('float64')

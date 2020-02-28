@@ -3,13 +3,13 @@ import torch
 import pandas as pd
 import numpy as np
 from torch.utils.data import Dataset
-from torch import from_numpy
+from data import DataPadding
 
 # Adapted from https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 class BehavioralDataset(Dataset):
     """Behavioral Learning dataset."""
 
-    def __init__(self, transform=None):
+    def __init__(self, isCnnData, transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
@@ -22,6 +22,7 @@ class BehavioralDataset(Dataset):
         print(os.getcwd())
         self.trials_df = pd.read_csv('./behavioral.csv')
         self.transform = transform
+        self.isCnnData = isCnnData
         os.chdir(original_wd)
 
     def __len__(self):
@@ -33,12 +34,24 @@ class BehavioralDataset(Dataset):
 
 
         trials = self.trials_df.iloc[idx, 0:]
-        trials = np.array([trials]).reshape((5,5))
-        trials = np.dstack(trials)
+        trials = np.array([trials])
+
+        # stack data if using conv filters
+        if self.isCnnData:
+            num_features = trials.shape[1]
+            trials_temp = [trials for i in range(num_features)]
+            trials = np.vstack(trials_temp)
+
+        #trials = np.dstack(trials)
+        trials = trials.reshape(1, trials.shape[0], trials.shape[1])
+        trials = torch.from_numpy(trials)
 
         if self.transform:
             trials = self.transform(trials)
-        trials = from_numpy(trials)
+
+        # pad data if using conv filters
+        if self.isCnnData:
+            trials = DataPadding.padData(trials)
 
         # second position should be a label however we have no use for this
         return trials, []
