@@ -13,6 +13,7 @@ import torchvision.utils as vutils
 from torch.autograd import Variable
 import os
 import json
+from matplotlib import pyplot as plt
 
 import models.dcgan as dcgan
 import models.mlp as mlp
@@ -38,7 +39,7 @@ if __name__=="__main__":
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
     # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
 
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --ngf 64 --ndf 64
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 32 --nc 1 --ngf 64 --ndf 64
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
     parser.add_argument('--dataroot', required=True, help='path to dataset')
@@ -187,6 +188,7 @@ if __name__=="__main__":
         optimizerG = optim.RMSprop(netG.parameters(), lr = opt.lrG)
 
     gen_iterations = 0
+    loss_d_list = []
     for epoch in range(opt.niter):
         data_iter = iter(dataloader)
         i = 0
@@ -277,6 +279,8 @@ if __name__=="__main__":
             print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
                 % (epoch, opt.niter, i, len(dataloader), gen_iterations,
                 errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
+
+            loss_d_list.append(errD.data[0])
             # if gen_iterations % 500 == 0:
             #     real_cpu = real_cpu.mul(0.5).add(0.5)
             #     vutils.save_image(real_cpu, '{0}/real_samples.png'.format(opt.experiment))
@@ -290,5 +294,9 @@ if __name__=="__main__":
         torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
         torch.save(netD.state_dict(), '{0}/netD_epoch_{1}.pth'.format(opt.experiment, epoch))
 
-    print(fake.data.numpy().reshape((64,25)))
-    np.savetxt(opt.experiment + '/fake_samples.csv', fake.data.numpy().reshape((64,25)))
+    # save matrix of fake samples
+    np.save('./samples/fake_samples_{0}.npy'.format(opt.experiment), fake.data.numpy())
+
+    # make plot of loss_D
+    plt.plot(np.arange(1, len(loss_d_list) + 1), loss_d_list)
+    plt.savefig('./samples/w_loss_{0}.png'.format(opt.experiment))
