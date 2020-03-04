@@ -18,7 +18,7 @@ class BehavioralDataset(Dataset):
         print("CWD")
         original_wd = os.getcwd()
         print(os.getcwd())
-        os.chdir(original_wd+'\\data')
+        os.chdir(os.path.join(os.getcwd(), 'data'))
         print(os.getcwd())
         self.trials_df = pd.read_csv('./behavioral.csv')
         self.transform = transform

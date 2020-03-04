@@ -67,12 +67,13 @@ if __name__=="__main__":
     parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
     parser.add_argument('--experiment', default=None, help='Where to store samples and models')
     parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
+    parser.add_argument('--experiment_name', default='', help='Tag appended to all output files')
     opt = parser.parse_args()
     print(opt)
 
     if opt.experiment is None:
-        opt.experiment = 'samples'
-    os.system('mkdir {0}'.format(opt.experiment))
+        opt.experiment = os.path.join('', 'samples')
+        os.system('mkdir samples')
 
     opt.manualSeed = 0 #random.randint(1, 10000) # fix seed
     print("Random Seed: ", opt.manualSeed)
@@ -127,7 +128,7 @@ if __name__=="__main__":
 
     # write out generator config to generate images together wth training checkpoints (.pth)
     generator_config = {"imageSize": opt.imageSize, "nz": nz, "nc": nc, "ngf": ngf, "ngpu": ngpu, "n_extra_layers": n_extra_layers, "noBN": opt.noBN, "mlp_G": opt.mlp_G}
-    with open(os.path.join(opt.experiment, "generator_config.json"), 'w+') as gcfg:
+    with open(os.path.join(opt.experiment, "generator_config_{0}.json".format(opt.experiment_name)), 'w+') as gcfg:
         gcfg.write(json.dumps(generator_config)+"\n")
 
     # custom weights initialization called on netG and netD
@@ -148,7 +149,7 @@ if __name__=="__main__":
 
     # write out generator config to generate images together wth training checkpoints (.pth)
     generator_config = {"imageSize": opt.imageSize, "nz": nz, "nc": nc, "ngf": ngf, "ngpu": ngpu, "n_extra_layers": n_extra_layers, "noBN": opt.noBN, "mlp_G": opt.mlp_G}
-    with open(os.path.join(opt.experiment, "generator_config.json"), 'w') as gcfg:
+    with open(os.path.join(opt.experiment, "generator_config_{0}.json".format(opt.experiment_name)), 'w') as gcfg:
         gcfg.write(json.dumps(generator_config)+"\n")
 
     netG.apply(weights_init)
@@ -290,13 +291,13 @@ if __name__=="__main__":
 
 
 
-        # do checkpointing
-        torch.save(netG.state_dict(), '{0}/netG_epoch_{1}.pth'.format(opt.experiment, epoch))
-        torch.save(netD.state_dict(), '{0}/netD_epoch_{1}.pth'.format(opt.experiment, epoch))
-
-    # save matrix of fake samples
-    np.save('./samples/fake_samples_{0}.npy'.format(opt.experiment), fake.data.numpy())
+    # save networks
+    torch.save(netG.state_dict(), '{0}/netG_{1}.pth'.format(opt.experiment, opt.experiment_name))
+    torch.save(netD.state_dict(), '{0}/netD_{1}.pth'.format(opt.experiment, opt.experiment_name))
 
     # make plot of loss_D
     plt.plot(np.arange(1, len(loss_d_list) + 1), loss_d_list)
-    plt.savefig('./samples/w_loss_{0}.png'.format(opt.experiment))
+    plt.savefig('{0}/w_loss_{1}.png'.format(opt.experiment, opt.experiment_name))
+
+    # save matrix of fake samples
+    np.save('{0}/fake_samples_{1}.npy'.format(opt.experiment, opt.experiment_name), fake.data.numpy())
