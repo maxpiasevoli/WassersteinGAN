@@ -300,4 +300,4 @@ if __name__=="__main__":
     plt.savefig('{0}/w_loss_{1}.png'.format(opt.experiment, opt.experiment_name))
 
     # save matrix of fake samples
-    np.save('{0}/fake_samples_{1}.npy'.format(opt.experiment, opt.experiment_name), fake.data.numpy())
+    # np.save('{0}/fake_samples_{1}.npy'.format(opt.experiment, opt.experiment_name), fake.data.numpy())
