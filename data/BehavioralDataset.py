@@ -37,10 +37,10 @@ class BehavioralDataset(Dataset):
         trials = np.array([trials])
 
         # stack data if using conv filters
-        if self.isCnnData:
-            num_features = trials.shape[1]
-            trials_temp = [trials for i in range(num_features)]
-            trials = np.vstack(trials_temp)
+        # if self.isCnnData:
+        num_features = trials.shape[1]
+        trials_temp = [trials for i in range(num_features)]
+        trials = np.vstack(trials_temp)
 
         #trials = np.dstack(trials)
         trials = trials.reshape(1, trials.shape[0], trials.shape[1])

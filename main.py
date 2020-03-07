@@ -28,16 +28,7 @@ if __name__=="__main__":
     warnings.filterwarnings("ignore")
 
     # working
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 512 --ndf 512
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 100 --ndf 100 --lrD 0.000005 --niter 50
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 25 --ndf 25 --lrD 0.00003 --niter 10000
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D --ngf 25 --ndf 25 --lrD 0.0001 --niter 3000
-
-
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --noBN --mlp_G --mlp_D
-    # python main.py --dataset behavioral --dataroot ./ --imageSize 5 --nc 1 --mlp_G --mlp_D
+    # python main.py --dataset behavioral --dataroot ./ --imageSize 25 --nc 1 --mlp_G --mlp_D --ngf 64 --ndf 64 --niter 5
 
     # python main.py --dataset behavioral --dataroot ./ --imageSize 32 --nc 1 --ngf 64 --ndf 64
     parser = argparse.ArgumentParser()
@@ -116,8 +107,10 @@ if __name__=="__main__":
         tfm = transforms.Compose([transforms.ToTensor()])
         dataset = local_dsets.BehavioralDataset(isCnnData=isCnnData)
     assert dataset
+    assert opt.batchSize <= len(dataset)
+    sampler = torch.utils.data.RandomSampler(dataset, replacement=True, num_samples=opt.batchSize)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=opt.batchSize,
-                                            shuffle=True, num_workers=int(opt.workers))
+                                            sampler=sampler, num_workers=int(opt.workers))
 
     ngpu = int(opt.ngpu)
     nz = int(opt.nz)
@@ -218,13 +211,13 @@ if __name__=="__main__":
 
                 # train with real
                 real_cpu, _ = data
-                netD.zero_grad()
                 batch_size = real_cpu.size(0)
 
                 if opt.cuda:
                     real_cpu = real_cpu.cuda()
-                #input.resize_as_(real_cpu).copy_(real_cpu)
+                input.resize_as_(real_cpu).copy_(real_cpu)
                 inputv = Variable(input)
+                real_samples = inputv
 
                 errD_real = netD(inputv)
                 errD_real.backward(one)
@@ -234,14 +227,15 @@ if __name__=="__main__":
                 noisev = Variable(noise, volatile = True) # totally freeze netG
                 fake = Variable(netG(noisev).data)
                 inputv = fake
+                fake_samples = fake
                 errD_fake = netD(inputv)
                 errD_fake.backward(mone)
                 errD = errD_real - errD_fake
                 optimizerD.step()
 
             # determine critic's ability to differentiate
-            real_crit_scores = netD.pred(inputv)[:,0,0,0]
-            fake_crit_scores = netD.pred(inputv)[:,0,0,0]
+            real_crit_scores = netD.pred(real_samples)
+            fake_crit_scores = netD.pred(fake_samples)
             real_crit_scores = real_crit_scores.reshape(real_crit_scores.shape[0],1)
             fake_crit_scores = fake_crit_scores.reshape(fake_crit_scores.shape[0],1)
 
