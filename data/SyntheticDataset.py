@@ -3,10 +3,10 @@ import torch
 import pandas as pd
 import numpy as np
 from torch.utils.data import Dataset
-from .DataPadding import DataPadding
+from data import DataPadding
 
 # Adapted from https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-class BehavioralDataset(Dataset):
+class SyntheticDataset(Dataset):
     """Behavioral Learning dataset."""
 
     def __init__(self, isCnnData, transform=None):
@@ -15,12 +15,12 @@ class BehavioralDataset(Dataset):
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
-        #print("CWD")
+        print("CWD")
         original_wd = os.getcwd()
-        #print(os.getcwd())
+        print(os.getcwd())
         os.chdir(os.path.join(os.getcwd(), 'data'))
-        #print(os.getcwd())
-        self.trials_df = pd.read_csv('./behavioral.csv')
+        print(os.getcwd())
+        self.trials_df = pd.read_csv('./synDist.csv')
         self.transform = transform
         self.isCnnData = isCnnData
         os.chdir(original_wd)
@@ -37,11 +37,12 @@ class BehavioralDataset(Dataset):
         trials = np.array([trials])
 
         # stack data if using conv filters
-        # if self.isCnnData:
-        num_features = trials.shape[1]
-        trials_temp = [trials for i in range(num_features)]
-        trials = np.vstack(trials_temp)
+        if self.isCnnData:
+            num_features = trials.shape[1]
+            trials_temp = [trials for i in range(num_features)]
+            trials = np.vstack(trials_temp)
 
+        #trials = np.dstack(trials)
         trials = trials.reshape(1, trials.shape[0], trials.shape[1])
         trials = torch.from_numpy(trials)
 

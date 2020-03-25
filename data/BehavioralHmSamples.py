@@ -6,21 +6,25 @@ from torch.utils.data import Dataset
 from .DataPadding import DataPadding
 
 # Adapted from https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-class BehavioralDataset(Dataset):
-    """Behavioral Learning dataset."""
+class BehavioralHmSamples(Dataset):
+    """Behavioral hierarchical models samples dataset."""
 
-    def __init__(self, isCnnData, transform=None):
+    def __init__(self, modelNum, isCnnData, transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
-        #print("CWD")
+
+        #print('please, ', os.getcwd())
         original_wd = os.getcwd()
-        #print(os.getcwd())
         os.chdir(os.path.join(os.getcwd(), 'data'))
+        if modelNum == 1:
+            dataset_path = './bl_m1.csv'
+        else:
+            dataset_path = './bl_m2.csv'
         #print(os.getcwd())
-        self.trials_df = pd.read_csv('./behavioral.csv')
+        self.trials_df = pd.read_csv(dataset_path)
         self.transform = transform
         self.isCnnData = isCnnData
         os.chdir(original_wd)

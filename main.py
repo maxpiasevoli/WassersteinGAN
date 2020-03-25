@@ -18,6 +18,7 @@ from matplotlib import pyplot as plt
 import models.dcgan as dcgan
 import models.mlp as mlp
 import data.BehavioralDataset as local_dsets
+from data.BehavioralHmSamples import BehavioralHmSamples
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -106,6 +107,9 @@ if __name__=="__main__":
     elif opt.dataset == 'behavioral':
         tfm = transforms.Compose([transforms.ToTensor()])
         dataset = local_dsets.BehavioralDataset(isCnnData=isCnnData)
+    elif opt.dataset == 'quick':
+        tfm = transforms.Compose([transforms.ToTensor()])
+        dataset = BehavioralHmSamples(modelNum=3, isCnnData=isCnnData)
     assert dataset
     assert opt.batchSize <= len(dataset)
     sampler = torch.utils.data.RandomSampler(dataset, replacement=True, num_samples=opt.batchSize)
