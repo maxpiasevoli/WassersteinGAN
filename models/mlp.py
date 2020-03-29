@@ -44,10 +44,10 @@ class MLP_D(nn.Module):
             # Z goes into a linear of size: ndf
             nn.Linear(nc * isize * isize, ndf),
             nn.ReLU(True),
-            nn.Linear(ndf, ndf),
-            nn.ReLU(True),
-            nn.Linear(ndf, ndf),
-            nn.ReLU(True),
+            # nn.Linear(ndf, ndf),
+            # nn.ReLU(True),
+            # nn.Linear(ndf, ndf),
+            # nn.ReLU(True),
             nn.Linear(ndf, 1),
         )
         self.main = main
