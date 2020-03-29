@@ -34,7 +34,7 @@ srun python main.py --dataset {0} --dataroot ./ --imageSize {1} --nc 1 --ngf
  --cuda --ngpu 4 --batchSize 20
 '''
 
-for i in range(opt.num_models):
+for i in range(int(opt.num_models)):
 
     slurm_script_name = 'train_model_{0}.slurm'.format(i)
     experiment_name = '{0}k_{1}_automated'.format(opt.niter, i)
@@ -43,6 +43,6 @@ for i in range(opt.num_models):
 
     f.write(slurm_script.format(opt.dataset, opt.imageSize, opt.niter, experiment_name))
 
-    subprocess.call(['sbatch', slurm_script_name])
-
     f.close()
+
+    subprocess.call(['sbatch', slurm_script_name])
