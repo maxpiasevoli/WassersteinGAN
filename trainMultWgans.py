@@ -29,9 +29,7 @@ module purge
 module load anaconda3
 conda activate torch-gpu
 
-srun python main.py --dataset {0} --dataroot ./ --imageSize {1} --nc 1 --ngf
- 64 --ndf 64 --niter {2} --experiment /scratch/gpfs/mp16 --experiment_name {3}
- --cuda --ngpu 4 --batchSize 20
+srun python main.py --dataset {0} --dataroot ./ --imageSize {1} --nc 1 --ngf 64 --ndf 64 --niter {2} --experiment /scratch/gpfs/mp16 --experiment_name {3} --cuda --ngpu 4 --batchSize 20
 '''
 
 for i in range(int(opt.num_models)):
