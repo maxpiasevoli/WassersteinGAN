@@ -67,7 +67,7 @@ if __name__=="__main__":
         opt.experiment = os.path.join('', 'samples')
         os.system('mkdir samples')
 
-    opt.manualSeed = 0 #random.randint(1, 10000) # fix seed
+    opt.manualSeed = random.randint(1, 10000) # fix seed
     print("Random Seed: ", opt.manualSeed)
     random.seed(opt.manualSeed)
     torch.manual_seed(opt.manualSeed)
