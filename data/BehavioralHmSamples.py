@@ -9,7 +9,7 @@ from .DataPadding import DataPadding
 class BehavioralHmSamples(Dataset):
     """Behavioral hierarchical models samples dataset."""
 
-    def __init__(self, modelNum, isCnnData, transform=None):
+    def __init__(self, modelNum, isCnnData, isScoring, transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
@@ -19,10 +19,28 @@ class BehavioralHmSamples(Dataset):
         #print('please, ', os.getcwd())
         original_wd = os.getcwd()
         os.chdir(os.path.join(os.getcwd(), 'data'))
-        if modelNum == 1:
-            dataset_path = './bl_m1.csv'
+        if isScoring:
+            if modelNum == 1:
+                dataset_path = './bl_m1_1000.csv'
+            elif modelNum == 2:
+                dataset_path = './bl_m2_1000.csv'
+            elif modelNum == 3:
+                dataset_path = './bl_m3_1000.csv'
+            elif modelNum == 4:
+                dataset_path = './bl_m4_1000.csv'
+            else:
+                dataset_path = './bl_m5_1000.csv'
         else:
-            dataset_path = './bl_m2.csv'
+            if modelNum == 1:
+                dataset_path = './bl_m1.csv'
+            elif modelNum == 2:
+                dataset_path = './bl_m2.csv'
+            elif modelNum == 3:
+                dataset_path = './bl_m3.csv'
+            elif modelNum == 4:
+                dataset_path = './bl_m4.csv'
+            else:
+                dataset_path = './bl_m5.csv'
         #print(os.getcwd())
         self.trials_df = pd.read_csv(dataset_path)
         self.transform = transform

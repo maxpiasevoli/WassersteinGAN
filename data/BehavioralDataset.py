@@ -9,7 +9,7 @@ from .DataPadding import DataPadding
 class BehavioralDataset(Dataset):
     """Behavioral Learning dataset."""
 
-    def __init__(self, isCnnData, transform=None):
+    def __init__(self, isCnnData, isScoring, transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
@@ -20,7 +20,10 @@ class BehavioralDataset(Dataset):
         #print(os.getcwd())
         os.chdir(os.path.join(os.getcwd(), 'data'))
         #print(os.getcwd())
-        self.trials_df = pd.read_csv('./behavioral.csv')
+        if isScoring:
+            self.trials_df = pd.read_csv('./behavioral_cv.csv')
+        else:
+            self.trials_df = pd.read_csv('./behavioral.csv')
         self.transform = transform
         self.isCnnData = isCnnData
         os.chdir(original_wd)
