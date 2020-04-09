@@ -10,10 +10,10 @@ opt = parser.parse_args()
 for i in range(opt.num_models):
 
     subprocess.call(['cp', '/scratch/gpfs/mp16/netG_{0}k_{1}_automated.pth'.format(opt.niter, i),
-                     '/home/mp16/WassersteinGAN/loss_curves/netG_{0}k_{1}_automated.pth'.format(opt.niter, i)])
+                     '/home/mp16/WassersteinGAN/loss_curves/netG_{0}k_{1}_automated.pth'.format(opt.niter//1000, i)])
 
     subprocess.call(['cp', '/scratch/gpfs/mp16/netD_{0}k_{1}_automated.pth'.format(opt.niter, i),
-                     '/home/mp16/WassersteinGAN/loss_curves/netD_{0}k_{1}_automated.pth'.format(opt.niter, i)])
+                     '/home/mp16/WassersteinGAN/loss_curves/netD_{0}k_{1}_automated.pth'.format(opt.niter//1000, i)])
 
-    subprocess.call(['cp', '/scratch/gpfs/mp16/w_loss_{0}k_{1}_automated.pth'.format(opt.niter, i),
-                     '/home/mp16/WassersteinGAN/loss_curves/w_loss_{0}k_{1}_automated.pth'.format(opt.niter, i)])
+    subprocess.call(['cp', '/scratch/gpfs/mp16/w_loss_{0}k_{1}_automated.png'.format(opt.niter, i),
+                     '/home/mp16/WassersteinGAN/loss_curves/w_loss_{0}k_{1}_automated.png'.format(opt.niter//1000, i)])
