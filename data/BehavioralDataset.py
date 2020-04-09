@@ -4,26 +4,27 @@ import pandas as pd
 import numpy as np
 from torch.utils.data import Dataset
 from .DataPadding import DataPadding
+from .SplitData import SplitData
 
 # Adapted from https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 class BehavioralDataset(Dataset):
     """Behavioral Learning dataset."""
 
-    def __init__(self, isCnnData, isScoring, transform=None):
+    def __init__(self, isCnnData, isScoring=False, auto_number=-1, output_directory='./', transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
-        #print("CWD")
         original_wd = os.getcwd()
-        #print(os.getcwd())
         os.chdir(os.path.join(os.getcwd(), 'data'))
-        #print(os.getcwd())
         if isScoring:
             self.trials_df = pd.read_csv('./behavioral_cv.csv')
         else:
-            self.trials_df = pd.read_csv('./behavioral.csv')
+            full_trials_df = pd.read_csv('./behavioral.csv')
+            trials_df = SplitData.holdoutSamples(full_trials_df, auto_number,
+                                                 'behavioral', output_directory)
+            self.trials_df = trials_df
         self.transform = transform
         self.isCnnData = isCnnData
         os.chdir(original_wd)

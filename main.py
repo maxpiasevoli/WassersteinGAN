@@ -60,6 +60,7 @@ if __name__=="__main__":
     parser.add_argument('--experiment', default=None, help='Where to store samples and models')
     parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
     parser.add_argument('--experiment_name', default='', help='Tag appended to all output files')
+    parser.add_argument('--auto_number', required=True, help='Tag appended to all output files when training multiple versions of one model')
     opt = parser.parse_args()
     print(opt)
 
@@ -106,7 +107,9 @@ if __name__=="__main__":
         )
     elif opt.dataset == 'behavioral':
         tfm = transforms.Compose([transforms.ToTensor()])
-        dataset = local_dsets.BehavioralDataset(isCnnData=isCnnData)
+        dataset = local_dsets.BehavioralDataset(isCnnData=isCnnData,
+                                                auto_number=opt.auto_number,
+                                                output_directory=opt.experiment)
     elif opt.dataset == 'quick':
         tfm = transforms.Compose([transforms.ToTensor()])
         dataset = BehavioralHmSamples(modelNum=3, isCnnData=isCnnData)
