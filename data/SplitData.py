@@ -17,7 +17,7 @@ class SplitData:
         # output training and cross validation sets
         cv_samples = df.iloc[cv_indices]
         df = df.drop(cv_indices)
-        df.to_csv('{0}/{1}_{2}_training.csv'.format(output_directory, dataset_name, automation_number))
-        cv_samples.to_csv('{0}/{1}_{2}_cv.csv'.format(output_directory, dataset_name, automation_number))
+        df.to_csv('{0}/{1}_{2}_training.csv'.format(output_directory, dataset_name, automation_number), index=False)
+        cv_samples.to_csv('{0}/{1}_{2}_cv.csv'.format(output_directory, dataset_name, automation_number), index=False)
 
         return df
