@@ -35,7 +35,7 @@ srun python main.py --dataset {0} --dataroot ./ --imageSize {1} --nc 1 --ngf 64 
 for i in range(int(opt.num_models)):
 
     slurm_script_name = 'train_model_{0}.slurm'.format(i)
-    experiment_name = '{0}k_{1}_automated'.format(opt.niter, i)
+    experiment_name = '{0}_{1}k_{2}_automated'.format(opt.dataset, opt.niter, i)
 
     f = open(slurm_script_name, 'w+')
 
