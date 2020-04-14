@@ -12,7 +12,7 @@ parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet 
 parser.add_argument('--imageSize', type=int, default=64, help='the height / width of the input image to network')
 parser.add_argument('--niter', type=int, default=25, help='number of epochs to train for')
 parser.add_argument('--num_models', default=30, help='Number of WGAN models to train')
-parser.add_argument('--experiment', required=True, help='tag for experiment names')
+parser.add_argument('--experiment', required=True, help='Where to store output data and models')
 opt = parser.parse_args()
 
 
