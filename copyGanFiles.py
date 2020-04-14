@@ -5,7 +5,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw | behavioral')
 parser.add_argument('--niter', type=int, default=25, help='number of epochs to train for')
-parser.add_argument('--num_models', default=30, help='Number of WGAN models to train')
+parser.add_argument('--num_models', type=int, default=30, help='Number of WGAN models to train')
 parser.add_argument('--experiment', required=True, help='Where output data and models are stored')
 opt = parser.parse_args()
 
