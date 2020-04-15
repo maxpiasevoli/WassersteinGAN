@@ -24,3 +24,6 @@ print(behavioral.analysis, pars = c("beta","lp__"))
 post <- extract(behavioral.analysis)
 mu <- colMeans(post$mu)
 gamma <- colMeans(post$gamma)
+
+write.csv(gamma, file='./data/behavioral_gamma.csv', row.names=FALSE)
+write.csv(mu, file='./data/behavioral_mu.csv', row.names=FALSE)
