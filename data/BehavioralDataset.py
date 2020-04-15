@@ -10,7 +10,7 @@ from .SplitData import SplitData
 class BehavioralDataset(Dataset):
     """Behavioral Learning dataset."""
 
-    def __init__(self, isCnnData, isScoring=False, auto_number=-1, output_directory='./', transform=None):
+    def __init__(self, isCnnData, isScoring=False, auto_number=-1, niter=-1, output_directory='./', transform=None):
         """
         Args:
             transform (callable, optional): Optional transform to be applied
@@ -19,7 +19,7 @@ class BehavioralDataset(Dataset):
         original_wd = os.getcwd()
         os.chdir(os.path.join(os.getcwd(), 'data'))
         if isScoring:
-            self.trials_df = pd.read_csv('./behavioral_cv.csv')
+            self.trials_df = pd.read_csv('./behavioral_{0}k_{1}_cv.csv'.format(niter, auto_number))
         else:
             full_trials_df = pd.read_csv('./behavioral.csv')
             trials_df = SplitData.holdoutSamples(full_trials_df, auto_number,
