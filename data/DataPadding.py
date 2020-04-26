@@ -35,13 +35,10 @@ class DataPadding:
     # dataV is a tensor variable that is to be padded so that it's dimensions
     # are a mutliple of 16. This is mainly used for the DCGAN
     @staticmethod
-    def padData(dataV):
+    def padData(dataV, row_dim, col_dim):
 
-        row_dim = dataV.shape[1]
-        col_dim = dataV.shape[2]
         padding_left, padding_right = _determineDimPadding(row_dim)
         padding_top, padding_bottom = _determineDimPadding(col_dim)
-        print(padding_left, padding_right, padding_top, padding_bottom)
         torch_padder = torch.nn.ZeroPad2d((padding_left, padding_right,
                                            padding_top, padding_bottom))
 

@@ -56,7 +56,7 @@ class BehavioralDataset(Dataset):
 
         # pad data if using conv filters
         if self.isCnnData:
-            trials = DataPadding.padData(trials)
+            trials = DataPadding.padData(trials, trials.shape[1], trials.shape[2])
 
         # second position should be a label however we have no use for this
         return trials, []
