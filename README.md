@@ -1,12 +1,11 @@
 Evaluating Hierarchical Models Using the WGAN
-
-========
+===============
 
 The code to run the WGAN itself is in main.py. Note that for all python files in this repository, the command line arguments for the given program can be further explained by running "python *file name*.py -h". Two examples of valid commands are commented in lines 31-35 of main.py.    
 
 In terms of output files, main.py outputs two .pth files of the format 'netG_*experiment name*.pth' for the generator and 'netD_*experiment name*.pth' for the critic. These .pth files can be used to load both trained networks at a later point. Also, main.py outputs the loss curve of the wgan in the 'w_loss_*experiment name*.png' file.  
 
-Note that the implementation of main.py uses the PyTorch DataLoader class to load batches of samples concurrently. DataLoader requires a class that inherits the Dataset class and implements the __len__ and __getitem__ functions as specified in the documentation for each dataset that you want to train a wgan on. Examples for the behavioral learning and Stop-And-Frisk datasets are respectively shown in BehavioralDataset.py and StopAndFriskDataset.py. Note that StopAndFriskDataset.py still has features that need to be implemented that are implemented in BehavioralDataset.py. I also used classes that inherit the Dataset class to read generated samples from the hierarchical models, stack them if needed, and add necessary padding as shown in BehavioralHmSamples.py. 
+Note that the implementation of main.py uses the PyTorch DataLoader class to load batches of samples concurrently. DataLoader requires a class that inherits the Dataset class and implements the __len__ and __getitem__ functions as specified in the documentation for each dataset that you want to train a wgan on. Examples for the behavioral learning and Stop-And-Frisk datasets are respectively shown in BehavioralDataset.py and StopAndFriskDataset.py. Note that StopAndFriskDataset.py still has features that need to be implemented that are implemented in BehavioralDataset.py. I also used classes that inherit the Dataset class to read generated samples from the hierarchical models, stack them if needed, and add necessary padding as shown in BehavioralHmSamples.py.
 
 ## GPU Helper Files
 
