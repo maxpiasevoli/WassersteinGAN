@@ -13,8 +13,27 @@ class BehavioralDataset(Dataset):
     def __init__(self, isCnnData, isScoring=False, auto_number=-1, niter=-1, output_directory='./', transform=None, useAllData=False):
         """
         Args:
+            isCnnData (boolean, required): if True, applies necessary padding to the stacked data.
+            isScoring (boolean, optional): if True, samples from the cross validation subset of a
+                specified, trained wgan model will be provided.
+            autoNumber (int/string, optional): number of the wgan model use in referring to the
+                cross validation subset.
+            niter (int/string, optional): thousands of iterations used to train the wgan model also used
+                in referring to the cross validation subset.
+            output_directory (string, optional): where to output the training and cross validation
+                subsets when training a new wgan model.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
+            useAllData (boolean, optional): draws samples from the entire behavioral learning dataset.
+                Separate training and cross validation sets are not produced.
+                Note that isScoring must be false in order for this to occur.
+
+        Note: if isScoring and useAllData are both false, then the entire behavioral
+        learning dataset will be split into training and cross validation subsets.
+        Samples are randomly assigned to both sets. You'll want to generate
+        the training and cross validation sets when training multiple versions of
+        the same wgan model to calculate the wins matrix and later use the
+        generative ability model to evaluate the hierarchical models.
         """
         original_wd = os.getcwd()
         os.chdir(os.path.join(os.getcwd(), 'data'))

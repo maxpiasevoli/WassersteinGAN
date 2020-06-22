@@ -7,7 +7,7 @@ data {
 }
 parameters {
   real mu[num_real_samples];
-  real gamma[num_h_models];
+  real rho[num_h_models];
   real<lower=0> sigma[2];
 }
 transformed parameters {
@@ -15,7 +15,7 @@ transformed parameters {
   
   for (i in 1:num_real_samples){
     for (k in 1:num_h_models){
-      theta[i,k] = exp(mu[i] + gamma[k]);
+      theta[i,k] = exp(mu[i] + rho[k]);
     }
   }
   
@@ -33,7 +33,7 @@ model {
     mu[i] ~ normal(0, sigma[1]);
   }
   for (k in 1:num_h_models){
-    gamma[k] ~ normal(0, sigma[2]);
+    rho[k] ~ normal(0, sigma[2]);
   }
   
   

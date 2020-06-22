@@ -12,6 +12,14 @@ class BehavioralHmSamples(Dataset):
     def __init__(self, modelNum, isCnnData, isScoring, transform=None):
         """
         Args:
+            modelNum (int, required): specifies which hierarchical model number to draw samples
+                from.
+            isCnnData (boolean, required): if True, applies necessary padding to the stacked data.
+            isScoring (boolean, required): if True, returns samples from the sample set containing
+                1000 different samples. Otherwise returns samples from the sample
+                set containing 30 different samples. Have this parameter be true
+                when constructing the wins matrix to be used in the generative
+                ability model.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """

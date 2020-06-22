@@ -28,10 +28,12 @@ if __name__=="__main__":
 
     warnings.filterwarnings("ignore")
 
-    # working
+    # The two calls below when run in the command line respectively run a wgan
+    # with an ordinary mlp structure and a wgan with a convolutional architecture
+    # on the behavioral learning dataset.
     # python main.py --dataset behavioral --dataroot ./ --imageSize 25 --nc 1 --mlp_G --mlp_D --ngf 64 --ndf 64 --niter 5
-
     # python main.py --dataset behavioral --dataroot ./ --imageSize 32 --nc 1 --ngf 64 --ndf 64
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw ')
     parser.add_argument('--dataroot', required=True, help='path to dataset')
@@ -40,8 +42,8 @@ if __name__=="__main__":
     parser.add_argument('--imageSize', type=int, default=64, help='the height / width of the input image to network')
     parser.add_argument('--nc', type=int, default=3, help='input image channels')
     parser.add_argument('--nz', type=int, default=100, help='size of the latent z vector')
-    parser.add_argument('--ngf', type=int, default=64)
-    parser.add_argument('--ndf', type=int, default=64)
+    parser.add_argument('--ngf', type=int, default=64, help='number of nodes for generator hidden layers')
+    parser.add_argument('--ndf', type=int, default=64, help='number of nodes for discriminator hidden layers')
     parser.add_argument('--niter', type=int, default=25, help='number of epochs to train for')
     parser.add_argument('--lrD', type=float, default=0.00005, help='learning rate for Critic, default=0.00005')
     parser.add_argument('--lrG', type=float, default=0.00005, help='learning rate for Generator, default=0.00005')
@@ -50,8 +52,8 @@ if __name__=="__main__":
     parser.add_argument('--ngpu'  , type=int, default=1, help='number of GPUs to use')
     parser.add_argument('--netG', default='', help="path to netG (to continue training)")
     parser.add_argument('--netD', default='', help="path to netD (to continue training)")
-    parser.add_argument('--clamp_lower', type=float, default=-0.01)
-    parser.add_argument('--clamp_upper', type=float, default=0.01)
+    parser.add_argument('--clamp_lower', type=float, default=-0.01, help='lower bound for weight clipping')
+    parser.add_argument('--clamp_upper', type=float, default=0.01, help='upper bound for weight clipping')
     parser.add_argument('--Diters', type=int, default=5, help='number of D iters per each G iter')
     parser.add_argument('--noBN', action='store_true', help='use batchnorm or not (only for DCGAN)')
     parser.add_argument('--mlp_G', action='store_true', help='use MLP for G')
@@ -240,7 +242,7 @@ if __name__=="__main__":
                 errD = errD_real - errD_fake
                 optimizerD.step()
 
-            # determine critic's ability to differentiate
+            # determine critic's ability to differentiate using Platt Scaling
             real_crit_scores = netD.pred(real_samples)
             fake_crit_scores = netD.pred(fake_samples)
             real_crit_scores = real_crit_scores.reshape(real_crit_scores.shape[0],1)
@@ -299,6 +301,3 @@ if __name__=="__main__":
     # make plot of loss_D
     plt.plot(np.arange(1, len(loss_d_list) + 1), loss_d_list)
     plt.savefig('{0}/w_loss_{1}.png'.format(opt.experiment, opt.experiment_name))
-
-    # save matrix of fake samples
-    # np.save('{0}/fake_samples_{1}.npy'.format(opt.experiment, opt.experiment_name), fake.data.numpy())

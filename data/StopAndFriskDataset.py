@@ -13,15 +13,34 @@ class StopAndFriskDataset(Dataset):
     def __init__(self, isCnnData, transform=None):
         """
         Args:
+            isCnnData (boolean, required): if True, applies necessary padding to
+                the stacked data.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
+
+        Note: The "stacking" of individual samples in this Dataset class is
+        different from the stacking used in BehavioralDataset.py.
+        In BehavioralDataset.py, the same sample was stacked multiple times to
+        form a 2D sample with equal length and width dimensions. In this class,
+        samples from the entire dataset are randomly selected with replacement
+        and stacked to form each 2D sample with equal length and width dimensions.
+        This logic can be seen in lines 54-58. This variation of stacking was
+        chosen given the lower dimensionality of the Stop-And-Frisk data. Note
+        that compared to BehavioralDataset.py, this Dataset class still needs
+        various features implemented like having the option to generate
+        separate training and cross validation subsets for a wgan model and
+        then read samples from a cross validation subset to enable calculation
+        of the wins matrix and use of the generative ability model.
+
         """
         print("CWD")
         original_wd = os.getcwd()
         print(os.getcwd())
         os.chdir(os.path.join(os.getcwd(), 'data'))
         print(os.getcwd())
-        self.trials_df = pd.read_csv('./safData.csv')
+        data_file_name = '' # specify the data file name containing the correct
+                            # subset of Stop-And-Friks data
+        self.trials_df = pd.read_csv(data_file_name)
         self.transform = transform
         self.isCnnData = isCnnData
         os.chdir(original_wd)

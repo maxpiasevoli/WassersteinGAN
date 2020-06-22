@@ -22,10 +22,29 @@ dataList <- list(num_real_samples=num.real.samples, num_h_models=num.h.models, n
 behavioral.analysis <- stan(file='./stan/score_analysis2.stan', data=dataList, iter=1000, chains=4) # model with intercept
 post <- extract(behavioral.analysis)
 mu <- colMeans(post$mu)
-gamma <- colMeans(post$gamma)
+rho <- colMeans(post$rho)
 sigma <- colMeans(post$sigma)
 
-write.csv(gamma, file='./data/behavioral_gamma.csv', row.names=FALSE)
+# save means
+write.csv(rho, file='./data/behavioral_rho.csv', row.names=FALSE)
 write.csv(mu, file='./data/behavioral_mu.csv', row.names=FALSE)
 write.csv(sigma, file='./data/behavioral_sigma.csv', row.names=FALSE)
+# save all estimates 
+write.csv(post$rho, file='./data/behavioral_all_rho.csv', row.names=FALSE)
+write.csv(post$mu, file='./data/behavioral_all_mu.csv', row.names=FALSE)
+write.csv(post$sigma, file='./data/behavioral_all_sigma.csv', row.names=FALSE)
 
+samples <- data.frame(Logit = post$rho[,1], Log = post$rho[,2], LOTM = post$rho[,3], 
+                      LFSM = post$rho[,4], NTLOTM = post$rho[,5])
+
+library(tidyverse)
+samples.long <- samples %>% pivot_longer(cols = c(Logit, Log, LOTM, LFSM, NTLOTM), 
+                                         values_to = "rho", names_to = "Model")
+ggplot(samples.long) +
+  geom_histogram(mapping = aes(x = rho, fill = Model),
+                 alpha = 0.5, position = "identity", binwidth=0.01) +
+  xlab("Estimated Rho Value") +
+  ggtitle("Estimated Rho Values by Model") +
+  ylab("Count")
+
+ggsave("./experiment_images/rho_by_model.png")
