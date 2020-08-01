@@ -35,9 +35,7 @@ This notebook contains the code that generates "ASCII Art" meaning visual repres
 
 ### Stop and Frisk Data Preprocessing.ipynb
 
-This notebook contains the code that performs all preprocessing to generate the data that will be used to recrete the Stop-And-Frisk Hierarchical Models.
-
-- Stop and Frisk Data Preprocessing --> update at end
+This notebook contains the code that performs all preprocessing to generate the data that will be used to recreate the Stop-And-Frisk Hierarchical Models.
 
 ### Network_Check.ipynb
 
@@ -51,11 +49,22 @@ This notebook calculates the wins matrix that is later used for the generative a
 
 ### H_Models_BL_SF.R
 
-Contains all hierarchical models for the behavioral learning data and Stop-and-Frisk data as well.
+Contains all hierarchical models for the behavioral learning data and Stop-and-Frisk data as well. Note that the first two behavioral learning models were proposed in the Andrew Gelman and Jennifer Hill textbook, [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/) while the three Stop-and-Frisk models were taken from the Gelman, Fagan and Kiss paper, [*An Analysis of the New York City Police Department's "Stop-and-Frisk" Policy in the Context of Claims of Racial Bias*](http://www.stat.columbia.edu/~gelman/research/published/frisk9.pdf).
 
 ### Score_Analysis.R
 
 Reads in the produced wins matrix produced by Scoring.ipynb and runs the generative ability model.
 
-- Finish H_Models_BL_SF after stop and frisk data is updated
-- Update data files after Stop-And-Frisk is sorted out
+## Data Sources
+
+### Stop-and-Frisk
+
+Regarding the data for the Stop-and-Frisk models, we calculate the number of stops and arrests using records of stops from the [NYPD's Stop, Question, and Frisk Database](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page). In this case, we calculate the number of stops by precinct and race in the 15 month period from January 2015 through March 2016 as well as the number of arrests in 2014. As in the Gelman paper, we consider the three races of White, Hispanic, and Black in considering stops and arrests. The Stop, Question and Frisk Database classifies stopped individuals as either White-Hispanic or Black-Hispanic, so we consider White-Hispanic individuals as "Hispanic" and Black-Hispanic individuals as "Black" for this data. The paper separately considers stops and arrests for violent, property, drug, and weapon crimes so we separately process stops and arrests for each type of crime.
+
+The analysis in the Gelman paper also requires the White, Hispanic, and Black populations in each precinct for some models. To produce this data, we first downloaded the NYPD police precinct boundaries from the [NYC Open Data Portal](https://data.cityofnewyork.us/Public-Safety/Police-Precincts/78dh-3ptz). We then used the census block group boundaries from [Simply Analytics](https://app.simplyanalytics.com/index.html) and used the spatial join function to create relationship between NYC Police precincts boundaries and census block groups. Finally, the Hispanic 2017 block group level data of NYC from the [American Community Survey 2013-2017 (5-years estimate)](https://www.census.gov/programs-surveys/acs/technical-documentation/table-and-geography-changes/2017/5-year.html) which we accessed from [Social Explorer](https://www.socialexplorer.com/explore-maps) was joined to the spatial join data to calculate the populations by precinct and ethnic group. This data is stored in NYC_BlockGroups_Police_Precincts_Hispanic_Pop.csv.
+
+The processed data is stored in multiple output files. In stop_and_frisk_data_by_precinct.csv, we have for each precinct all calculated stops and arrests for all four types of crimes as well as the populations by demographic. Then, for each type of crime, we have a .csv file for the number of arrests in the previous year as well as the number of stops in the 15 month period by precinct and race. These files respectively have the format of 2014_arrests_\*crime type\*.csv and 20152016_stops_\*crime type\*.csv.
+
+### Behavioral Learning Experiment
+
+The behavioral learning experiment data stored in ./data/dogs.dat is provided through the Andrew Gelman and Jennifer Hill textbook, [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/). We then converted this data into a more amenable form which is stored in behavioral.csv.  
